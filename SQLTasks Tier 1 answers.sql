@@ -94,6 +94,16 @@ the guest user's ID is always 0. Include in your output the name of the
 facility, the name of the member formatted as a single column, and the cost.
 Order by descending cost, and do not use any subqueries. */
 
+SELECT f.name, CONCAT_WS( ' ', m.firstname, m.surname ) AS member_name,
+    	CASE WHEN m.memid = 0 THEN SUM(guestcost*slots)
+        	 WHEN m.memid != 0 THEN SUM(membercost*slots) END as total_cost
+FROM Bookings AS b
+	INNER JOIN Facilities AS f ON b.facid = f.facid
+	INNER JOIN Members AS m ON b.memid = m.memid
+WHERE starttime LIKE '2012-09-14%'
+GROUP BY f.name, member_name
+HAVING total_cost > 30
+ORDER BY total_cost DESC
 
 /* Q9: This time, produce the same result as in Q8, but using a subquery. */
 SELECT * FROM
